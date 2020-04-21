@@ -24,41 +24,40 @@ VueTestUtils 2.x will introduce a few new methods and remove some less used ones
 
 # Detailed design
 
-* `createLocalVue` is removed. Vue now exposes `createApp`, which creates an isolated app instance. VTU does that under the hood.
-* Fully `async`, each method that involves a mutation returns a promise. Methods like `setValue` and `trigger` can be awaited now. 
-* rewritten completely in TypeScript, giving much improved type hints when writing tests.
-
-We will only list the changes and deprecations. Please check the temporary [documentation](https://vuejs.github.io/vue-test-utils-next-docs/) for a full API listing.
+- `createLocalVue` is removed. Vue now exposes `createApp`, which creates an isolated app instance. VTU does that under the hood.
+- Fully `async`, each method that involves a mutation returns a promise. Methods like `setValue` and `trigger` can be awaited now. 
+- Rewritten completely in TypeScript, giving much improved type hints when writing tests.
+- Stubs will no longer render slots by default. Behind a flag, we may enable this, however scoped slots will not be able to provide data in such cases.
 
 ## API changes
+
+We will only list the changes and deprecations. Please check the temporary [documentation](https://vuejs.github.io/vue-test-utils-next-docs/) for a full API listing.
 
 ### mountOptions
 
 #### props
 
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#props)
-
-Renamed from `propsData`.
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#props) - Renamed from `propsData`.
 
 #### global
 
-**New** - [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global) - The `global` namespace is used to pass configuration to the `createApp` instance. Things like global components, directives and so on.
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global) - The `global` namespace is used to pass configuration to the `createApp` instance. Things like global components, directives and so on.
 
 These settings can also be globally set via the exported `config` object - `config.global.mocks.$t = jest.fn()`.
 
-* global.components - register global components
-* global.directives - register a global directive
-* global.mixins - register a global mixin
-* global.plugins - install a plugin
-* global.stubs - see bellow
-* global.mocks - see bellow
-* global.provide - see bellow
+- **global.components** - register global components
+- **global.directives** - register a global directive
+- **global.mixins** - register a global mixin
+- **global.plugins** - install a plugin
+- **global.stubs** - see bellow
+- **global.mocks** - see bellow
+- **global.provide** - see bellow
 
 #### stubs 
 
 [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global-stubs) - Moved to `global.stubs`. 
 
-**New** - Stubs will no longer render the slots of a component. This can be enabled by a global flag `config.renderStubSlots = true`.
+- **New** - Stubs will no longer render the slots of a component. This can be enabled by a global flag `config.renderStubSlots = true`.
 
 #### mocks
 
