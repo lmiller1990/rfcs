@@ -7,11 +7,11 @@
 
 VueTestUtils 2.x will introduce a few new methods and remove some less used ones.
 
--**Breaking:** Everything is Async.
--**Breaking:** `find` is now split into `find` and `findComponent`.
--**Breaking:** Removal of properties and methods, as they induce bad testing habits or are obsolete. 
--**Breaking:** Stubs no longer render slots by default.
--**Breaking:** `setProps` only works for the mounted component. 
+- **Breaking:** Everything is Async.
+- **Breaking:** `find` is now split into `find` and `findComponent`.
+- **Breaking:** Removal of properties and methods, as they induce bad testing habits or are obsolete. 
+- **Breaking:** Stubs no longer render slots by default.
+- **Breaking:** `setProps` only works for the mounted component. 
 
 **Note:** VueTestUtils v2.x will be aimed towards Vue 3. The API for VueTestUtils 1.x will stay the same and will support Vue 2.x. 
 
@@ -28,21 +28,11 @@ VueTestUtils 2.x will introduce a few new methods and remove some less used ones
 * Fully `async`, each method that involves a mutation returns a promise. Methods like `setValue` and `trigger` can be awaited now. 
 * rewritten completely in TypeScript, giving much improved type hints when writing tests.
 
-## API 
+We will only list the changes and deprecations. Please check the temporary [documentation](https://vuejs.github.io/vue-test-utils-next-docs/) for a full API listing.
 
-### Mount
+## API changes
 
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#mount)
-
-Mount stays as the main method to mount a component for testing.
-
-### Mount Options
-
-#### data
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#data)
-
-Not changed from VTU Beta.
+### mountOptions
 
 #### props
 
@@ -50,63 +40,41 @@ Not changed from VTU Beta.
 
 Renamed from `propsData`.
 
-#### slots
+#### global
 
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#slots)
+**New** - [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global) - The `global` namespace is used to pass configuration to the `createApp` instance. Things like global components, directives and so on.
 
-Passes slots down to the component. 
-
-**Note:** Read about [ScopedSlots](#scopedslots)
-
-#### global 
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global-components)
-
-The `global` namespace is used to pass configuration to the `createApp` instance. Things like global components, directives and so on.
+These settings can also be globally set via the exported `config` object - `config.global.mocks.$t = jest.fn()`.
 
 * global.components - register global components
 * global.directives - register a global directive
 * global.mixins - register a global mixin
-* global.mocks - mock a globally registered property
 * global.plugins - install a plugin
-* global.provide - provide something via Provide/Inject api.
-* global.stubs - stub out components.
+* global.stubs - see bellow
+* global.mocks - see bellow
+* global.provide - see bellow
 
-### Properties
+#### stubs 
 
-#### element
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global-stubs) - Moved to `global.stubs`. 
 
-Returns the DOM element.
+**New** - Stubs will no longer render the slots of a component. This can be enabled by a global flag `config.renderStubSlots = true`.
 
-#### vm
+#### mocks
 
-Returns the VM of a `VueWrapper`.
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global-mocks) - Moved to `global.mocks`
+
+#### provide
+
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#global-provide) - Moved to `global.provide`.
 
 ### Methods
-
-#### attributes
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#attributes)
-
-Unchanged.
 
 #### classes
 
 [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#classes)
 
-- **New** - If Vue component has multiple roots, will throw error.
-
-#### emitted
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#emitted)
-
-- **New** - Only available on `VueWrapper`.
-
-#### exists
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#exists)
-
-Unchanged
+- **New** - throw error for multiple root nodes.
 
 #### find
 
@@ -138,18 +106,6 @@ Unchanged
 - **New** - finds all Vue Components that match `name`, `query` or Component Definition. Returns array of `VueWrapper`.
 - **New** - Only available on `VueWrapper`.
 
-#### html
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#html) 
-
-Unchanged.
-
-#### props
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#props-2)
-
-Unchanged.
-
 #### setProps
 
 [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#setprops)
@@ -165,74 +121,50 @@ Unchanged.
 - **New** - Unifies `setChecked` and `setSelected`.
 - **New** - Returns promise
 
-#### text 
+## Deprecated
 
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#text)
+### Methods
 
-Unchanged
+#### emittedByOrder
 
-#### trigger
-
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#trigger)
-
-Unchanged.
-
-## Deprecated/Removed methods
-
-### emittedByOrder
-
-[Link](https://vue-test-utils.vuejs.org/api/wrapper/#emittedbyorder)
-
-Rarely used, use `emitted` instead.
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#emittedbyorder) - Rarely used, use `emitted` instead.
 
 ```js
 expect(wrapper.emitted('change')[0]).toEqual(['param1', 'param2'])
 ```
 
-### is
+#### is
 
-[Link](https://vue-test-utils.vuejs.org/api/wrapper/#is)
-
-Use `element.tagName` or the `classes()` method.
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#is) - Use `element.tagName` or the `classes()` method.
 
 ```js
 expect(wrapper.element.tagName).toEqual('div')
 expect(wrapper.classes()).toContain('Foo')
 ```
 
-### isEmpty
+#### isEmpty
 
-[Link](https://vue-test-utils.vuejs.org/api/wrapper/#isempty)
-
-Use custom matcher like [jest-dom#tobeempty](https://github.com/testing-library/jest-dom#tobeempty) on the element.
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#isempty) - Use custom matcher like [jest-dom#tobeempty](https://github.com/testing-library/jest-dom#tobeempty) on the element.
 
 ```js
 expect(wrapper.element).toBeEmpty()
 ```
 
-### isVisible
+#### isVisible
 
-[Link](https://vue-test-utils.vuejs.org/api/wrapper/#isvisible)
-
-Use custom matcher like [jest-dom#tobevisible](https://github.com/testing-library/jest-dom#tobevisible)
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#isvisible) - Use custom matcher like [jest-dom#tobevisible](https://github.com/testing-library/jest-dom#tobevisible)
 
 ```js
 expect(wrapper.element).toBeVisible()
 ```
 
-### isVueInstance
+#### isVueInstance
 
-[Link](https://vue-test-utils.vuejs.org/api/wrapper/#isvueinstance)
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#isvueinstance) - No longer necessary, `find` always returns an `DOMWrapper` and `findComponent` returns a `VueWrapper`. Both return `ErrorWrapper` if failed.
 
-No longer necessary, `find` always returns an `DOMWrapper` and `findComponent` returns a `VueWrapper`. Both return `ErrorWrapper` if failed.
+#### setMethods
 
-### setMethods
-
-[Link](https://vue-test-utils.vuejs.org/api/wrapper/#setmethods)
-
-Anti-pattern. Vue does not support arbitrarily replacement of methods, nor should VTU.
-
-If you need to stub out an action, extract the hard parts away. Then you can unit test them as well.
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#setmethods) - Anti-pattern. Vue does not support arbitrarily replacement of methods, nor should VTU. If you need to stub out an action, extract the hard parts away. Then you can unit test them as well.
 
 ```js
 // Component.vue
@@ -255,15 +187,15 @@ asyncAction.mockResolvedValue({ foo: 'bar' })
 
 ```
 
-## setChecked and setSelected
+#### setChecked and setSelected
  
 Merged with [setValue](#setvalue)
 
-## Deprecated/Removed mount options
+#### name 
 
-- **Wrapper.name** - [Link](https://vue-test-utils.vuejs.org/api/wrapper/#name) - Removed from core. Could be added as part of extended plugin.
+[Link](https://vue-test-utils.vuejs.org/api/wrapper/#name) - Removed from core. Could be added as part of extended plugin.
 
-## Deprecated/Removed Classes and properties
+### Classes and properties
 
 - **WrapperArray** - [Link](https://vue-test-utils.vuejs.org/api/wrapper-array/) - `find` and `findComponent` will just return an array of `VueWrapper` or `DOMWrapper` respectively.
 - **config.methods** - [Link](https://vue-test-utils.vuejs.org/api/#methods) - Will no longer be able to replace methods.
@@ -273,17 +205,13 @@ Merged with [setValue](#setvalue)
 ## Not yet implemented
 
 - **Wrapper.selector** [Link](https://vue-test-utils.vuejs.org/api/wrapper/#selector)
+- **Wrapper.contains** - [Link](https://vue-test-utils.vuejs.org/api/wrapper/#contains)
 - **shallowMount** - [Link](https://vue-test-utils.vuejs.org/api/#shallowmount) - **Stubs** work, so its halfway there.
 - **render** - [Link](https://vue-test-utils.vuejs.org/api/#render)
 - **renderToString** - [Link](https://vue-test-utils.vuejs.org/api/#rendertostring)
 - **createWrapper** - [Link](https://vue-test-utils.vuejs.org/api/#createwrapper-node-options)
 - **enableAutoDestroy** - [Link](https://vue-test-utils.vuejs.org/api/#enableautodestroy-hook)
-- **Wrapper.contains** - [Link](https://vue-test-utils.vuejs.org/api/wrapper/#contains)
-
-### scopedSlots
-
-ScopedSlots are not ready yet. They will most probably be merged with normal ones, and will be a function with data, similar to VTU Beta.
-It is yet to be decided.
+- **scopedSlots** - ScopedSlots are not ready yet. They will most probably be merged with normal ones, and will be a function with data, similar to VTU Beta.
 
 # Drawbacks
 
