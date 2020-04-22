@@ -5,12 +5,12 @@
 
 # Summary
 
-VueTestUtils 2.x will introduce a few new methods and remove some less used ones.
+VueTestUtils 2.x, which targets Vue 3, will introduce a few new methods and remove some less used ones.
 
-- **Breaking:** Everything is Async.
+- **Breaking:** `sync` mode removed. All `wrapper` methods return `nextTick`, you must `await` them
 - **Breaking:** `find` is now split into `find` and `findComponent`.
-- **Breaking:** Removal of properties and methods, as they induce bad testing habits or are obsolete. 
-- **Breaking:** Stubs no longer render slots by default.
+- **Breaking:** Removal of some wrapper properties and methods, as they induce bad testing habits or are obsolete. 
+- **Breaking:** `shallowMount` stubs defaults slots
 - **Breaking:** `setProps` only works for the mounted component. 
 
 **Note:** VueTestUtils v2.x will be aimed towards Vue 3. The API for VueTestUtils 1.x will stay the same and will support Vue 2.x. 
@@ -25,9 +25,9 @@ VueTestUtils 2.x will introduce a few new methods and remove some less used ones
 # Detailed design
 
 - `createLocalVue` is removed. Vue now exposes `createApp`, which creates an isolated app instance. VTU does that under the hood.
-- Fully `async`, each method that involves a mutation returns a promise. Methods like `setValue` and `trigger` can be awaited now. 
+- Fully `async`, each method that involves a mutation returns `nextTick`. Methods like `setValue` and `trigger` can be awaited now. to ensure the DOM is re-rendered before test execution resumes.
 - Rewritten completely in TypeScript, giving much improved type hints when writing tests.
-- Stubs will no longer render slots by default. Behind a flag, we may enable this, however scoped slots will not be able to provide data in such cases.
+- `shallowMount` will stub default slots of stubbed components. There will be an opt-in configuration to enable rendering slots for stubbed components in a similar manner to VTU beta. There is a limitation that scoped slots will not be able to provide data in such cases.
 
 ## API changes
 
@@ -37,7 +37,7 @@ We will only list the changes and deprecations. Please check the temporary [docu
 
 #### props
 
-[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#props) - Renamed from `propsData`.
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#props) - Renamed from `propsData` to match component `props` field.
 
 #### global
 
@@ -75,6 +75,12 @@ These settings can also be globally set via the exported `config` object - `conf
 
 - **New** - throw error for multiple root nodes.
 
+#### unmount
+
+[Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#unmount)
+
+- **New** replaces `destroy` to match Vue 3 API
+
 #### find
 
 [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#find)
@@ -110,7 +116,7 @@ These settings can also be globally set via the exported `config` object - `conf
 [Link](https://vuejs.github.io/vue-test-utils-next-docs/api/#setprops)
 
 - **Breaking** - Only works on mounted component.
-- **New** - Returns promise
+- **New** - Returns `nextTick`
 
 #### setValue
 
@@ -118,7 +124,7 @@ These settings can also be globally set via the exported `config` object - `conf
 
 - **Breaking** - Only works on `DOMWrapper` (for now).
 - **New** - Unifies `setChecked` and `setSelected`.
-- **New** - Returns promise
+- **New** - Returns `nextTick`
 
 ## Deprecated
 
@@ -190,6 +196,10 @@ asyncAction.mockResolvedValue({ foo: 'bar' })
  
 Merged with [setValue](#setvalue)
 
+#### destroy
+
+Now named `unmount` to match Vue 3 API
+
 #### name 
 
 [Link](https://vue-test-utils.vuejs.org/api/wrapper/#name) - Removed from core. Could be added as part of extended plugin.
@@ -220,8 +230,10 @@ Merged with [setValue](#setvalue)
 
 # Adoption strategy
 
-- Rewrite Docs from ground up. 
-- Add dedicated guides on how to write better and more maintainable tests for popular tools like Vuex, Router ec..
+- Rewrite docs from ground up. 
+- Code-mod where possible (`find` -> `findComponent` for most cases, `destroy` -> `unmount`)
+- Add deprecation warnings to beta before v1 release
+- Add dedicated guides on how to write better and more maintainable tests for popular tools like Vuex, Router etc..
 - Work with popular Vue ecosystem libraries and frameworks, like Quasar, Nuxt and Vuetify for better understanding of user needs.
 - Deprecation build with warnings. 
 
